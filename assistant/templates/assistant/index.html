@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Assistant</title>
+  
+  <!-- PWA Settings -->
+  <link rel="manifest" href="{% static 'manifest.json' %}" />
+  <meta name="theme-color" content="#111827" />
+
+  <!-- Bootstrap 5 CSS & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  
+  <!-- Markdown Parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body class="bg-light">
+
+  <div class="chat-container mx-auto d-flex flex-column bg-white shadow-sm">
+    <!-- Header -->
+    <header class="chat-header d-flex align-items-center justify-content-between p-3 border-bottom">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-mortarboard-fill fs-4"></i>
+        <span class="fw-bold tracking-wider">AI ASSISTANT</span>
+      </div>
+      <div class="d-flex gap-2">
+        <button id="install-btn" class="btn btn-outline-dark btn-sm d-none" title="Install App">
+          <i class="bi bi-phone"></i>
+        </button>
+        <button class="btn btn-outline-dark btn-sm" title="About">
+          <i class="bi bi-info-circle"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Offline Notification Banner -->
+    <div id="offline-banner" class="alert alert-warning py-1 px-3 m-0 text-center small d-none" role="alert">
+      <i class="bi bi-wifi-off me-1"></i> You are currently offline. AI responses require an active internet connection.
+    </div>
+
+    <!-- Chat Message Feed -->
+    <main id="chat-feed" class="chat-feed flex-grow-1 p-3 overflow-auto">
+      <!-- Default Greeting -->
+      <div class="message-group mb-3">
+        <div class="message-meta text-muted small text-uppercase">CLASS ASSISTANT • Lesson helper</div>
+        <div class="assistant-bubble p-3 rounded-3 mt-1 border">
+          Hi! Ready to explore today's science prompt? You can ask me any question about photosynthesis, cells, or plant life cycles to help with your worksheet.
+        </div>
+      </div>
+    </main>
+
+    <!-- Suggested Quick Chips -->
+    <div class="quick-prompts px-3 py-2 d-flex gap-2 overflow-x-auto border-top">
+      <button class="btn btn-sm btn-outline-secondary text-nowrap chip-btn">Why are leaves green?</button>
+      <button class="btn btn-sm btn-outline-secondary text-nowrap chip-btn">Give me an example</button>
+      <button class="btn btn-sm btn-outline-secondary text-nowrap chip-btn">Check my formula</button>
+    </div>
+
+    <!-- Input Section -->
+    <footer class="p-3 border-top">
+      <form id="chat-form" class="border rounded-3 p-2 bg-light">
+        {% csrf_token %}
+        <textarea id="user-input" class="form-control border-0 bg-transparent" rows="3" placeholder="Ask a question for class..."></textarea>
+        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+          <button type="button" id="clear-btn" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-x-lg"></i> Clear
+          </button>
+          <button type="submit" id="send-btn" class="btn btn-sm btn-dark px-3">
+            <i class="bi bi-send-fill"></i> Send
+          </button>
+        </div>
+      </form>
+      <div class="text-center mt-2 text-muted" style="font-size: 0.75rem;">
+        <i class="bi bi-shield-check"></i> Safe Student Mode • Offline PWA
+      </div>
+    </footer>
+  </div>
+
+  <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

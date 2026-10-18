@@ -1,0 +1,47 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  height: 100vh;
+}
+
+.chat-container {
+  max-width: 540px;
+  height: 100vh;
+}
+
+.tracking-wider {
+  letter-spacing: 0.08em;
+}
+
+.chat-feed {
+  scroll-behavior: smooth;
+}
+
+.message-meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.assistant-bubble {
+  background-color: #ffffff;
+  color: #111827;
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+.user-bubble {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+.assistant-bubble p:last-child,
+.user-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+#user-input {
+  box-shadow: none;
+  resize: none;
+}
