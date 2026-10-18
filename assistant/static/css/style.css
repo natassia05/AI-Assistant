@@ -45,3 +45,27 @@ body {
   box-shadow: none;
   resize: none;
 }
+
+/* Keep content within the phone screen */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+#chat-feed,
+.message,
+.message-content,
+.markdown-content {
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+}
+
+/* Make rendered mathematical equations scroll if necessary */
+mjx-container[display="true"] {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}

@@ -17,11 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
         'input[name="csrfmiddlewaretoken"]'
     );
 
+    // Clean unnecessary escaping without damaging LaTeX commands.
     function cleanMarkdown(text) {
-        return text
+        return String(text)
             .replace(/\\([*_#~`>])/g, "$1")
             .replace(/\\-/g, "-")
-            .replace(/\s*---\s*/g, "\n\n");
+            .replace(/\n[ \t]*---[ \t]*\n/g, "\n\n---\n\n");
     }
 
     function addMessage(role, text) {
@@ -29,8 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
         group.className = "message-group mb-3";
 
         const meta = document.createElement("div");
-        meta.className = "message-meta text-muted small text-uppercase";
-        meta.textContent = role === "user" ? "YOU" : "AI ASSISTANT";
+        meta.className =
+            "message-meta text-muted small text-uppercase";
+        meta.textContent =
+            role === "user" ? "YOU" : "AI ASSISTANT";
 
         const bubble = document.createElement("div");
         bubble.className =
@@ -47,10 +50,84 @@ document.addEventListener("DOMContentLoaded", () => {
         return bubble;
     }
 
+    // Protect LaTeX expressions while Markdown is being parsed.
+    function protectMath(text) {
+        const expressions = [];
+
+        const protectedText = text.replace(
+            /\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|(?<!\$)\$(?!\$)[^\n$]+\$/g,
+            (match) => {
+                const token = `MATHPLACEHOLDER${expressions.length}TOKEN`;
+                expressions.push(match);
+                return token;
+            }
+        );
+
+        return { protectedText, expressions };
+    }
+
+    function restoreMath(html, expressions) {
+        expressions.forEach((expression, index) => {
+            const token = `MATHPLACEHOLDER${index}TOKEN`;
+
+            // Restore expressions as text nodes, not raw HTML.
+            html = html.replace(
+                token,
+                () => {
+                    const element = document.createElement("span");
+                    element.textContent = expression;
+                    return element.outerHTML;
+                }
+            );
+        });
+
+        return html;
+    }
+
+    async function renderAssistantResponse(bubble, text) {
+        const markdown = cleanMarkdown(text);
+
+        if (
+            typeof marked === "undefined" ||
+            typeof DOMPurify === "undefined"
+        ) {
+            bubble.textContent = markdown;
+            console.error(
+                "Markdown rendering requires Marked.js and DOMPurify."
+            );
+            return;
+        }
+
+        const { protectedText, expressions } = protectMath(markdown);
+
+        // Parse and sanitize the Markdown.
+        const parsedHTML = marked.parse(protectedText);
+        const safeHTML = DOMPurify.sanitize(parsedHTML);
+
+        // Restore math expressions as literal text for MathJax.
+        bubble.innerHTML = restoreMath(safeHTML, expressions);
+
+        // Render the restored equations.
+        if (
+            window.MathJax &&
+            typeof window.MathJax.typesetPromise === "function"
+        ) {
+            try {
+                await window.MathJax.typesetPromise([bubble]);
+            } catch (error) {
+                console.error("MathJax rendering failed:", error);
+            }
+        }
+
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+    }
+
     async function sendMessage(message) {
         const prompt = message.trim();
 
-        if (!prompt || sendBtn.disabled) return;
+        if (!prompt || sendBtn.disabled) {
+            return;
+        }
 
         if (!navigator.onLine) {
             addMessage(
@@ -69,9 +146,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         addMessage("user", prompt);
+
         input.value = "";
         sendBtn.disabled = true;
-        sendBtn.textContent = "Thinking...";
+        sendBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Thinking...';
 
         const replyBubble = addMessage("assistant", "Thinking...");
 
@@ -95,32 +173,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             }
 
-            const markdown = cleanMarkdown(
+            await renderAssistantResponse(
+                replyBubble,
                 data.reply || "Sorry, I received an empty response."
             );
-
-            if (
-                typeof marked !== "undefined" &&
-                typeof DOMPurify !== "undefined"
-            ) {
-                const html = marked.parse(markdown);
-                replyBubble.innerHTML = DOMPurify.sanitize(html);
-
-                // Render LaTeX equations if MathJax is installed.
-                if (
-                    window.MathJax &&
-                    typeof window.MathJax.typesetPromise === "function"
-                ) {
-                    await window.MathJax.typesetPromise([replyBubble]);
-                }
-            } else {
-                replyBubble.textContent = markdown;
-                console.error(
-                    "Markdown formatting requires Marked.js and DOMPurify."
-                );
-            }
-
-            chatFeed.scrollTop = chatFeed.scrollHeight;
 
         } catch (error) {
             console.error("Chat request failed:", error);
@@ -128,8 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Sorry, I couldn't get a response. " + error.message;
         } finally {
             sendBtn.disabled = false;
-            sendBtn.innerHTML =
-                '<i class="bi bi-send-fill"></i> Send';
+            sendBtn.innerHTML = '<i class="bi bi-send-fill"></i> Send';
             input.focus();
         }
     }
@@ -161,13 +216,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateConnectionStatus() {
         if (offlineBanner) {
-            offlineBanner.classList.toggle("d-none", navigator.onLine);
+            offlineBanner.classList.toggle(
+                "d-none",
+                navigator.onLine
+            );
         }
     }
 
     window.addEventListener("online", updateConnectionStatus);
     window.addEventListener("offline", updateConnectionStatus);
     updateConnectionStatus();
+
+    // Register the service worker.
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/sw.js")
+                .catch((error) => {
+                    console.error(
+                        "Service worker registration failed:",
+                        error
+                    );
+                });
+        });
+    }
 
     console.log("AI Assistant JavaScript loaded successfully.");
 });

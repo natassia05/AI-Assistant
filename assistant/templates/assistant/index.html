@@ -86,21 +86,32 @@
   <!-- Sanitize generated HTML -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 
-  <!-- MathJax configuration -->
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      startup: {
-        typeset: false
-      }
-    };
-  </script>
+<!-- MathJax configuration -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    options: {
+      skipHtmlTags: [
+        'script', 'noscript', 'style',
+        'textarea', 'pre', 'code'
+      ]
+    },
+    startup: {
+      typeset: false
+    }
+  };
+</script>
 
-  <!-- MathJax equation renderer -->
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<!-- MathJax equation renderer -->
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
 
   <!-- AI Assistant application -->
   <script src="{% static 'js/app.js' %}"></script>
