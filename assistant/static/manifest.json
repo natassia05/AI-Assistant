@@ -1,21 +1,26 @@
+
 {
-  "name": "AI Classroom Assistant",
+  "id": "/",
+  "name": "AI Assistant",
   "short_name": "AI Assistant",
-  "description": "Smart AI Classroom Assistant with Gemini API",
+  "description": "A student-friendly AI assistant powered by Google Gemini.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f8f9fa",
   "theme_color": "#111827",
   "icons": [
     {
-      "src": "/static/icons/icon-192.png",
+      "src": "/static/icons/red_cat-icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/static/icons/icon-512.png",
+      "src": "/static/icons/red_cat-icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
