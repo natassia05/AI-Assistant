@@ -69,3 +69,113 @@ mjx-container[display="true"] {
     overflow-x: auto;
     overflow-y: hidden;
 }
+
+
+/* Fix mobile layout and suggested prompt buttons */
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.chat-header,
+.chat-feed,
+.quick-prompts,
+footer {
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+/* Let the chat feed use the available space */
+.chat-feed {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Keep suggestions in their own scrollable row */
+.quick-prompts {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding: 0.75rem 1rem;
+}
+
+.quick-prompts .chip-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* Keep the prompt input and buttons visible */
+footer {
+    flex: 0 0 auto;
+    background: #fff;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+#chat-form {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+#user-input {
+    width: 100%;
+    min-width: 0;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+/* Avoid horizontal overflow from long answers and equations */
+.message-group,
+.assistant-bubble,
+.user-bubble {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+}
+
+mjx-container[display="true"] {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Smaller spacing on phones */
+@media (max-width: 576px) {
+    .chat-header {
+        padding: 0.75rem !important;
+    }
+
+    .chat-feed {
+        padding: 0.75rem !important;
+    }
+
+    .quick-prompts {
+        padding: 0.65rem 0.75rem;
+    }
+
+    footer {
+        padding: 0.75rem !important;
+    }
+}
